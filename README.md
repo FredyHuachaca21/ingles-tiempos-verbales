@@ -1,54 +1,121 @@
-# React + TypeScript + Vite
+# Mapas Mentales de Tiempos Verbales en Inglés
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación interactiva para visualizar los diferentes tiempos verbales en inglés usando mapas mentales. Permite explorar verbos regulares e irregulares en presente, pasado y futuro mediante visualizaciones jerárquicas.
 
-Currently, two official plugins are available:
+![Captura de pantalla](screenshot.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🌟 Características
 
-## Expanding the ESLint configuration
+- Visualización de mapas mentales para tiempos verbales en inglés
+- Selección entre verbos regulares e irregulares
+- Navegación entre tiempos presente, pasado y futuro
+- Interfaz de usuario intuitiva y minimalista
+- Diseño responsivo para diferentes dispositivos
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 Demo
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+Puedes ver la aplicación en acción en: [https://tu-usuario.github.io/tiempos-verbales-ingles](https://tu-usuario.github.io/tiempos-verbales-ingles)
+
+## 🔧 Tecnologías
+
+- React 19
+- TypeScript
+- Markmap (para generar mapas mentales desde Markdown)
+- Vite (para build y desarrollo)
+- CSS moderno (variables, flexbox)
+- GitHub Pages (para hosting)
+- GitHub Actions (para CI/CD)
+
+## 📋 Requisitos previos
+
+- Node.js 18 o superior
+- npm o yarn
+
+## 🛠️ Instalación
+
+1. Clona este repositorio:
+   ```bash
+   git clone https://github.com/tu-usuario/tiempos-verbales-ingles.git
+   cd tiempos-verbales-ingles
+   ```
+
+2. Instala las dependencias:
+   ```bash
+   npm install
+   ```
+
+3. Inicia el servidor de desarrollo:
+   ```bash
+   npm run dev
+   ```
+
+4. Abre tu navegador en `http://localhost:5173`
+
+## 📦 Construcción para producción
+
+```bash
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Los archivos de salida se encontrarán en el directorio `dist/`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🚢 Despliegue
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+Este proyecto está configurado para ser desplegado en GitHub Pages automáticamente usando GitHub Actions. El workflow ya está configurado en `.github/workflows/deploy.yml`.
+
+### Configuración de GitHub Pages:
+
+1. Ve a la configuración del repositorio (Settings)
+2. Navega a Pages
+3. Asegúrate de que la fuente (Source) esté configurada como "GitHub Actions"
+
+Cada vez que hagas push a la rama `main`, GitHub Actions construirá y desplegará automáticamente tu aplicación.
+
+### Configuración manual:
+
+Si prefieres desplegar manualmente:
+
+```bash
+npm run build
+# Usar cualquier herramienta para desplegar el contenido de la carpeta dist/
 ```
+
+## 📁 Estructura del proyecto
+
+```
+/
+├── .github/workflows/    # Configuraciones de GitHub Actions
+├── public/               # Archivos estáticos
+│   └── data/             # Archivos Markdown con datos de tiempos verbales
+│       ├── regular/      # Verbos regulares
+│       └── irregular/    # Verbos irregulares
+├── src/                  # Código fuente
+│   ├── components/       # Componentes React
+│   ├── services/         # Servicios (carga de datos)
+│   ├── App.tsx           # Componente principal
+│   └── main.tsx          # Punto de entrada
+└── vite.config.ts        # Configuración de Vite
+```
+
+## 🧩 Personalización
+
+### Agregar nuevos mapas mentales:
+
+1. Añade archivos Markdown en `public/data/regular/` o `public/data/irregular/`
+2. Actualiza `src/services/markdownService.ts` para incluir los nuevos archivos
+
+### Modificar estilos:
+
+Los estilos principales se encuentran en `src/components/Markmap.css`.
+
+## 📄 Licencia
+
+MIT
+
+## 👥 Contribuciones
+
+Las contribuciones son bienvenidas. Por favor, abre un issue o PR para sugerencias o mejoras.
+
+---
+
+⭐ Si te resulta útil este proyecto, ¡no dudes en darle una estrella en GitHub!
