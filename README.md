@@ -16,7 +16,7 @@ Aplicación interactiva para visualizar los diferentes tiempos verbales en ingl�
 
 ## 🚀 Demo
 
-Puedes ver la aplicación en acción en: [https://tu-usuario.github.io/tiempos-verbales-ingles](https://tu-usuario.github.io/tiempos-verbales-ingles)
+Puedes ver la aplicación en acción en: [https://fredyhuachaca21.github.io/ingles-tiempos-verbales](https://fredyhuachaca21.github.io/ingles-tiempos-verbales)
 
 ## 🔧 Tecnologías
 
@@ -37,8 +37,8 @@ Puedes ver la aplicación en acción en: [https://tu-usuario.github.io/tiempos-v
 
 1. Clona este repositorio:
    ```bash
-   git clone https://github.com/tu-usuario/tiempos-verbales-ingles.git
-   cd tiempos-verbales-ingles
+   git clone https://github.com/fredyhuachaca21/ingles-tiempos-verbales.git
+   cd ingles-tiempos-verbales
    ```
 
 2. Instala las dependencias:

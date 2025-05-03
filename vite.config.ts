@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 // Obtener el nombre del repositorio desde el package.json o como variable de entorno
-const repositoryName = 'tiempos-verbales-ingles'
+const repositoryName = 'ingles-tiempos-verbales'
 
 // https://vite.dev/config/
 export default defineConfig({
