@@ -2,7 +2,9 @@
 
 Aplicación interactiva para visualizar los diferentes tiempos verbales en inglés usando mapas mentales. Permite explorar verbos regulares e irregulares en presente, pasado y futuro mediante visualizaciones jerárquicas.
 
+<!-- Cuando tengas una captura de pantalla, descomentar esta línea y agregar la imagen a la raíz del proyecto:
 ![Captura de pantalla](screenshot.png)
+-->
 
 ## 🌟 Características
 
@@ -71,14 +73,15 @@ Este proyecto está configurado para ser desplegado en GitHub Pages automáticam
 
 Cada vez que hagas push a la rama `main`, GitHub Actions construirá y desplegará automáticamente tu aplicación.
 
-### Configuración manual:
+### Despliegue manual:
 
-Si prefieres desplegar manualmente:
+También puedes desplegar manualmente utilizando el paquete gh-pages:
 
 ```bash
-npm run build
-# Usar cualquier herramienta para desplegar el contenido de la carpeta dist/
+npm run deploy
 ```
+
+Este comando construirá la aplicación y la publicará en la rama gh-pages de tu repositorio.
 
 ## 📁 Estructura del proyecto
 
