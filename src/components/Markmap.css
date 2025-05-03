@@ -1,14 +1,43 @@
+:root {
+  --primary-color: #4361ee;
+  --primary-light: #eef2ff;
+  --primary-dark: #3a56d4;
+  --secondary-color: #f8f9fa;
+  --accent-color: #6366f1;
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+  --text-dark: #1f2937;
+  --text-light: #6b7280;
+  --text-white: #ffffff;
+  --border-color: #e5e7eb;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --transition: all 0.2s ease-in-out;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--secondary-color);
+  color: var(--text-dark);
+  line-height: 1.6;
+}
+
 .markmap-container {
   width: 100%;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
   overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
   background-color: #fff;
   position: relative;
   min-height: 600px;
   display: flex;
   flex-direction: column;
+  transition: var(--transition);
 }
 
 .markmap-wrapper {
@@ -23,10 +52,13 @@
 }
 
 .markmap-toolbar {
-  background-color: #f5f5f5;
-  padding: 8px;
-  border-bottom: 1px solid #e0e0e0;
+  background-color: var(--primary-light);
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color);
   width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .markmap {
@@ -53,27 +85,34 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 24px;
 }
 
 .selector-controls {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
 }
 
 .category-selector,
 .file-selector {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 label {
-  font-weight: bold;
-  font-size: 1rem;
-  margin-bottom: 5px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0;
 }
 
 .button-group {
@@ -83,27 +122,45 @@ label {
 }
 
 button {
-  padding: 8px 16px;
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 10px 16px;
+  background-color: #fff;
+  color: var(--text-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
+  font-weight: 500;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
 }
 
 button:hover:not(:disabled) {
-  background-color: #e0e0e0;
+  background-color: var(--primary-light);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
 }
 
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  background-color: #f3f4f6;
 }
 
 button.active {
-  background-color: #0066cc;
-  color: white;
-  border-color: #0055aa;
+  background-color: var(--primary-color);
+  color: var(--text-white);
+  border-color: var(--primary-dark);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .markmap-content {
@@ -111,21 +168,77 @@ button.active {
 }
 
 .loading, .error {
-  padding: 20px;
+  padding: 16px;
   text-align: center;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   margin: 20px 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
 }
 
 .loading {
-  background-color: #f0f8ff;
-  color: #0066cc;
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  border-left: 4px solid var(--primary-color);
+}
+
+.loading::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--primary-color);
+  border-radius: 50%;
+  border-top-color: transparent;
+  margin-right: 10px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .error {
-  background-color: #fff0f0;
-  color: #cc0000;
+  background-color: #fee2e2;
+  color: var(--error-color);
+  border-left: 4px solid var(--error-color);
+}
+
+.app-header {
+  background-color: var(--primary-color);
+  padding: 24px;
+  color: white;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 30px;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.app-header h1 {
+  margin-bottom: 8px;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.app-header p {
+  opacity: 0.9;
+  font-size: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.app-footer {
+  margin-top: 30px;
+  padding: 20px;
+  text-align: center;
+  background-color: var(--primary-light);
+  border-top: 1px solid var(--border-color);
+  color: var(--text-light);
+  font-size: 0.9rem;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
 @media (min-width: 768px) {
@@ -133,5 +246,55 @@ button.active {
     flex-direction: row;
     align-items: flex-start;
     gap: 30px;
+    padding: 24px;
   }
+  
+  .category-selector,
+  .file-selector {
+    min-width: 200px;
+  }
+  
+  .app-header h1 {
+    font-size: 2.2rem;
+  }
+  
+  .app-header p {
+    font-size: 1.1rem;
+  }
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+label .icon {
+  color: var(--primary-color);
+}
+
+.markmap-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background-color: white;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid var(--primary-color);
+}
+
+.markmap-title h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.markmap-title .icon {
+  width: 24px;
+  height: 24px;
+  color: var(--primary-color);
 } 

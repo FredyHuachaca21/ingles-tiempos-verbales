@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { MarkmapViewer } from './Markmap';
 import { loadMarkdownFile, getAvailableMarkdownFiles } from '../services/markdownService';
+import { DocumentTextIcon, BookOpenIcon, ClockIcon } from '@heroicons/react/24/outline';
 
 export const MarkmapSelector = () => {
   const [selectedCategory, setSelectedCategory] = useState<'regular' | 'irregular'>('regular');
@@ -57,21 +58,31 @@ export const MarkmapSelector = () => {
     setSelectedFile(null); // Resetear la selección de archivo
   };
   
+  // Obtener el título del archivo actual
+  const getCurrentTitle = () => {
+    if (!selectedFile) return '';
+    const fileObj = files[selectedCategory].find(f => f.id === selectedFile);
+    return fileObj ? fileObj.name : '';
+  };
+  
   return (
     <div className="markmap-selector">
       <div className="selector-controls">
         <div className="category-selector">
-          <label>Categoría:</label>
+          <label>
+            <DocumentTextIcon className="icon" />
+            Categoría
+          </label>
           <div className="button-group">
             <button 
-              className={selectedCategory === 'regular' ? 'active' : ''} 
+              className={selectedCategory === 'regular' ? 'active' : ''}
               onClick={() => handleCategoryChange('regular')}
               disabled={loading}
             >
               Verbos Regulares
             </button>
             <button 
-              className={selectedCategory === 'irregular' ? 'active' : ''} 
+              className={selectedCategory === 'irregular' ? 'active' : ''}
               onClick={() => handleCategoryChange('irregular')}
               disabled={loading}
             >
@@ -81,7 +92,10 @@ export const MarkmapSelector = () => {
         </div>
         
         <div className="file-selector">
-          <label>Tiempo Verbal:</label>
+          <label>
+            <ClockIcon className="icon" />
+            Tiempo Verbal
+          </label>
           <div className="button-group">
             {files[selectedCategory].map(file => (
               <button 
@@ -98,6 +112,13 @@ export const MarkmapSelector = () => {
       </div>
       
       <div className="markmap-content">
+        {selectedFile && !loading && !error && (
+          <div className="markmap-title">
+            <BookOpenIcon className="icon" />
+            <h2>{getCurrentTitle()}</h2>
+          </div>
+        )}
+        
         {loading && <div className="loading">Cargando mapa mental...</div>}
         {error && <div className="error">{error}</div>}
         {!loading && !error && markdown && (
