@@ -4,7 +4,7 @@ import './components/Markmap.css';
 
 function App() {
   return (
-    <>
+    <div className="app-wrapper">
       <header className="app-header">
         <h1>Mapas Mentales de Tiempos Verbales en Inglés</h1>
         <p>Visualiza los diferentes tiempos verbales en inglés usando mapas mentales</p>
@@ -17,7 +17,7 @@ function App() {
       <footer className="app-footer">
         <p>© {new Date().getFullYear()} - Tiempos Verbales en Inglés</p>
       </footer>
-    </>
+    </div>
   );
 }
 

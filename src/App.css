@@ -3,6 +3,40 @@
   width: 100%;
   margin: 0 auto;
   text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Sticky footer */
+.app-content {
+  flex: 1 0 auto;
+  width: 100%;
+  padding-bottom: 2rem;
+}
+
+.app-footer {
+  flex-shrink: 0;
+}
+
+/* Responsive layout adjustments */
+@media (max-width: 639px) {
+  .app-content {
+    padding-bottom: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .app-content {
+    padding-bottom: 3rem;
+  }
 }
 
 /* Eliminar estilos antiguos no utilizados */

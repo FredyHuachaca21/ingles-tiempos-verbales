@@ -21,13 +21,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -74,6 +71,13 @@ button:focus-visible {
   }
 }
 
+/* Restablecer estilos para elementos comunes */
+img, svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
 /* Para asegurar que el contenido principal tenga un ancho máximo */
 .app-content {
   padding: 0 16px;
@@ -82,10 +86,65 @@ button:focus-visible {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+}
+
+/* Media queries responsivos */
+@media (max-width: 374px) {
+  html {
+    font-size: 14px;
+  }
+  
+  .app-content {
+    padding: 0 10px;
+  }
+}
+
+@media (min-width: 375px) and (max-width: 639px) {
+  html {
+    font-size: 15px;
+  }
+  
+  .app-content {
+    padding: 0 12px;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 767px) {
+  .app-content {
+    padding: 0 16px;
+  }
 }
 
 @media (min-width: 768px) {
   .app-content {
     padding: 0 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .app-content {
+    padding: 0 32px;
+  }
+}
+
+/* Estilos de scroll para dispositivos táctiles */
+@media (pointer: coarse) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
   }
 }
