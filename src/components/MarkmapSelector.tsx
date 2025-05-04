@@ -1,129 +1,129 @@
-import { useState, useEffect } from 'react';
-import { MarkmapViewer } from './Markmap';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { loadMarkdownFile, getAvailableMarkdownFiles } from '../services/markdownService';
+import { MarkmapViewer } from './Markmap';
 import { DocumentTextIcon, BookOpenIcon, ClockIcon } from '@heroicons/react/24/outline';
+import '../styles/MarkmapSelector.css';
+
+const VERB_CATEGORIES = ['regular', 'irregular'];
+const TENSE_FILES = {
+  regular: ['present_regular', 'past_regular', 'future_regular'],
+  irregular: ['present_irregular', 'past_irregular', 'future_irregular']
+};
+
+type Category = 'regular' | 'irregular';
 
 export const MarkmapSelector = () => {
-  const [selectedCategory, setSelectedCategory] = useState<'regular' | 'irregular'>('regular');
-  const [selectedFile, setSelectedFile] = useState<string | null>(null);
-  const [markdown, setMarkdown] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [category, setCategory] = useState<Category>('regular');
+  const [selectedFile, setSelectedFile] = useState<string>('');
+  const [markdownContent, setMarkdownContent] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
+  const [mapKey, setMapKey] = useState<number>(0);
   
-  const files = getAvailableMarkdownFiles();
+  // Obtenemos los archivos disponibles
+  const files = useMemo(() => getAvailableMarkdownFiles(), []);
   
-  // Cargar el primer archivo por defecto al montar el componente
-  useEffect(() => {
-    if (files[selectedCategory].length > 0 && !selectedFile) {
-      console.log('Seleccionando archivo por defecto:', files[selectedCategory][0].id);
-      setSelectedFile(files[selectedCategory][0].id);
-    }
-  }, [selectedCategory, files, selectedFile]);
-  
-  // Cargar el contenido del archivo cuando cambia la selección
-  useEffect(() => {
-    // Evitar cargar si no hay archivo seleccionado
-    if (!selectedFile) return;
+  // Cargar archivo de markdown
+  const loadFileContent = useCallback(async (fileId: string, cat: Category) => {
+    if (!fileId) return;
     
-    const fileObj = files[selectedCategory].find(f => f.id === selectedFile);
+    const fileObj = files[cat].find(f => f.id === fileId);
     if (!fileObj) return;
     
-    console.log('Cargando archivo:', fileObj.path);
-    setLoading(true);
-    setError(null);
-    
-    // Función para cargar el archivo
-    const fetchData = async () => {
-      try {
-        const content = await loadMarkdownFile(fileObj.path);
-        console.log('Contenido cargado, longitud:', content.length);
-        setMarkdown(content);
-      } catch (err) {
-        console.error('Error cargando archivo:', err);
-        setError(`Error al cargar el archivo: ${err instanceof Error ? err.message : String(err)}`);
-        setMarkdown('');
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchData();
-  }, [selectedFile, selectedCategory, files]);
+    try {
+      setLoading(true);
+      console.log('Cargando archivo:', fileObj.path);
+      const content = await loadMarkdownFile(fileObj.path);
+      console.log('Contenido cargado, longitud:', content.length);
+      setMarkdownContent(content);
+    } catch (error) {
+      console.error('Error al cargar el archivo:', error);
+      setMarkdownContent('# Error al cargar el contenido');
+    } finally {
+      setLoading(false);
+    }
+  }, [files]);
   
-  // Manejadores de cambio
-  const handleCategoryChange = (category: 'regular' | 'irregular') => {
-    if (category === selectedCategory) return;
-    console.log('Cambiando categoría a:', category);
-    setSelectedCategory(category);
-    setSelectedFile(null); // Resetear la selección de archivo
-  };
+  // Inicialización: seleccionar el primer archivo de la categoría inicial
+  useEffect(() => {
+    if (files[category]?.length > 0 && !selectedFile) {
+      const defaultFile = files[category][0].id;
+      console.log('Inicialización: seleccionando archivo inicial', defaultFile);
+      setSelectedFile(defaultFile);
+      loadFileContent(defaultFile, category);
+    }
+  }, [files, category, selectedFile, loadFileContent]);
+  
+  // Manejar cambio de categoría
+  const handleCategoryChange = useCallback((newCategory: Category) => {
+    if (newCategory === category) return;
+    
+    console.log('Cambiando categoría a:', newCategory);
+    
+    // Seleccionar el primer archivo de la nueva categoría
+    const newFile = files[newCategory][0].id;
+    
+    // Actualizar estados y forzar recreación del mapa
+    setMapKey(prev => prev + 1);
+    setCategory(newCategory);
+    setSelectedFile(newFile);
+    
+    // Cargar el contenido del nuevo archivo
+    loadFileContent(newFile, newCategory);
+  }, [category, files, loadFileContent]);
+  
+  // Manejar cambio de archivo
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newFile = e.target.value;
+    if (newFile === selectedFile) return;
+    
+    console.log('Cambiando archivo a:', newFile);
+    setSelectedFile(newFile);
+    loadFileContent(newFile, category);
+  }, [selectedFile, category, loadFileContent]);
   
   // Obtener el título del archivo actual
   const getCurrentTitle = () => {
     if (!selectedFile) return '';
-    const fileObj = files[selectedCategory].find(f => f.id === selectedFile);
+    const fileObj = files[category].find(f => f.id === selectedFile);
     return fileObj ? fileObj.name : '';
   };
   
   return (
-    <div className="markmap-selector">
-      <div className="selector-controls">
+    <div className="markmap-container">
+      <div className="selector-container">
         <div className="category-selector">
-          <label>
-            <DocumentTextIcon className="icon" />
-            Categoría
-          </label>
-          <div className="button-group">
-            <button 
-              className={selectedCategory === 'regular' ? 'active' : ''}
-              onClick={() => handleCategoryChange('regular')}
-              disabled={loading}
+          {Object.keys(files).map((cat) => (
+            <button
+              key={cat}
+              className={`category-button ${cat === category ? 'active' : ''}`}
+              onClick={() => handleCategoryChange(cat as Category)}
             >
-              Verbos Regulares
+              {cat.charAt(0).toUpperCase() + cat.slice(1)}
             </button>
-            <button 
-              className={selectedCategory === 'irregular' ? 'active' : ''}
-              onClick={() => handleCategoryChange('irregular')}
-              disabled={loading}
-            >
-              Verbos Irregulares
-            </button>
-          </div>
+          ))}
         </div>
         
         <div className="file-selector">
-          <label>
-            <ClockIcon className="icon" />
-            Tiempo Verbal
-          </label>
-          <div className="button-group">
-            {files[selectedCategory].map(file => (
-              <button 
-                key={file.id}
-                className={selectedFile === file.id ? 'active' : ''}
-                onClick={() => setSelectedFile(file.id)}
-                disabled={loading || selectedFile === file.id}
-              >
+          <select 
+            value={selectedFile} 
+            onChange={handleFileChange}
+            disabled={loading}
+          >
+            {files[category]?.map((file) => (
+              <option key={file.id} value={file.id}>
                 {file.name}
-              </button>
+              </option>
             ))}
-          </div>
+          </select>
         </div>
       </div>
       
-      <div className="markmap-content">
-        {selectedFile && !loading && !error && (
-          <div className="markmap-title">
-            <BookOpenIcon className="icon" />
-            <h2>{getCurrentTitle()}</h2>
-          </div>
-        )}
-        
-        {loading && <div className="loading">Cargando mapa mental...</div>}
-        {error && <div className="error">{error}</div>}
-        {!loading && !error && markdown && (
-          <div className="markmap-container">
-            <MarkmapViewer markdown={markdown} />
+      <div className="markmap-viewer">
+        {loading ? (
+          <div className="loading">Cargando mapa mental...</div>
+        ) : (
+          <div key={`markmap-${mapKey}`} className="markmap-wrapper">
+            <MarkmapViewer markdown={markdownContent} />
           </div>
         )}
       </div>
