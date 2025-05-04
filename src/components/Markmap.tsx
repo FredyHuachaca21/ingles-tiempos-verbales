@@ -1,4 +1,4 @@
-import { useRef, useLayoutEffect, useCallback } from 'react';
+import { useRef, useLayoutEffect, useCallback, useState } from 'react';
 import { Transformer } from 'markmap-lib';
 import { Markmap } from 'markmap-view';
 import { Toolbar } from 'markmap-toolbar';
@@ -6,7 +6,7 @@ import 'markmap-toolbar/dist/style.css';
 
 interface MarkmapProps {
   markdown: string;
-  mapKey?: number; // Clave opcional para forzar rerenderizado
+  mapKey?: number;
 }
 
 // Creamos un transformer fuera del componente para evitar recreaciones
@@ -15,129 +15,151 @@ const transformer = new Transformer();
 export const MarkmapViewer = ({ markdown, mapKey = 0 }: MarkmapProps) => {
   const refSvg = useRef<SVGSVGElement>(null);
   const refToolbar = useRef<HTMLDivElement>(null);
+  const refContainer = useRef<HTMLDivElement>(null);
   const markmapRef = useRef<Markmap | null>(null);
-  const timerRef = useRef<number | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  
+  // Función para alternar el modo de pantalla completa
+  const toggleFullscreen = useCallback(() => {
+    if (!refContainer.current) return;
+    
+    if (!document.fullscreenElement) {
+      // Entrar en modo pantalla completa
+      refContainer.current.requestFullscreen().catch(err => {
+        console.error(`Error al intentar modo pantalla completa: ${err.message}`);
+      });
+      setIsFullscreen(true);
+    } else {
+      // Salir del modo pantalla completa
+      document.exitFullscreen().catch(err => {
+        console.error(`Error al salir de pantalla completa: ${err.message}`);
+      });
+      setIsFullscreen(false);
+    }
+    
+    // Esperar un momento para que la interfaz se actualice y luego ajustar el mapa
+    setTimeout(() => {
+      if (markmapRef.current) {
+        try {
+          markmapRef.current.fit();
+        } catch (e) {
+          console.warn('Error al ajustar el mapa:', e);
+        }
+      }
+    }, 300);
+  }, []);
+  
+  // Manejar cambios en el estado de pantalla completa
+  useLayoutEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
   
   // Función de limpieza memoizada
   const cleanupMarkmap = useCallback(() => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-    
     if (refToolbar.current) refToolbar.current.innerHTML = '';
     if (refSvg.current) refSvg.current.innerHTML = '';
-    
-    // Liberar referencias
     markmapRef.current = null;
   }, []);
   
-  // Usamos useLayoutEffect para asegurar que las medidas se tomen antes de renderizar
+  // Crear y configurar el mapa mental
   useLayoutEffect(() => {
-    // Limpiar cualquier instancia previa
-    cleanupMarkmap();
-    
     if (!refSvg.current || !markdown) {
       return cleanupMarkmap;
     }
     
-    // Retrasar ligeramente la creación para asegurar que el DOM esté listo
-    timerRef.current = window.setTimeout(() => {
-      try {
-        console.log('Creando mapa mental con markdown:', markdown.substring(0, 50) + '...');
+    // Limpiar cualquier contenido previo
+    cleanupMarkmap();
+    
+    try {
+      console.log('Creando mapa mental con markdown:', markdown.substring(0, 50) + '...');
+      
+      // Establecer dimensiones fijas para evitar problemas de NaN
+      const svg = refSvg.current;
+      
+      // Configurar dimensiones y viewBox explícitos antes de crear el mapa
+      const width = svg.clientWidth || 800;
+      const height = svg.clientHeight || 600;
+      
+      svg.setAttribute('width', `${width}px`);
+      svg.setAttribute('height', `${height}px`);
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      
+      // Transformar markdown
+      const { root } = transformer.transform(markdown);
+      
+      // Crear nueva instancia con opciones seguras
+      const mm = Markmap.create(svg, {
+        autoFit: true,
+        initialExpandLevel: 2,
+      }, root);
+      
+      markmapRef.current = mm;
+      
+      // Agregar la barra de herramientas según la documentación oficial
+      if (refContainer.current && mm) {
+        // Usar el método estático create que es el recomendado en la documentación
+        const { el } = Toolbar.create(mm);
         
-        // Asegurar que el SVG esté limpio
-        const svg = refSvg.current;
-        if (!svg) return;
+        // Posicionar la barra de herramientas en la parte inferior derecha
+        el.style.position = 'absolute';
+        el.style.bottom = '0.5rem';
+        el.style.right = '0.5rem';
+        el.style.zIndex = '100';
         
-        // Limpiar cualquier contenido previo
-        svg.innerHTML = '';
+        // Añadir botón de pantalla completa personalizado
+        const fullscreenBtn = document.createElement('div');
+        fullscreenBtn.className = 'mm-toolbar-item';
+        fullscreenBtn.title = 'Pantalla completa';
+        fullscreenBtn.innerHTML = `
+          <svg width="20" height="20" viewBox="0 0 20 20">
+            <path stroke="none" fill="currentColor" fill-rule="evenodd" d="M4 9v-4h4v2h-2v2zM4 11v4h4v-2h-2v-2zM16 9v-4h-4v2h2v2zM16 11v4h-4v-2h2v-2z"></path>
+          </svg>
+        `;
+        fullscreenBtn.addEventListener('click', toggleFullscreen);
         
-        // Establecer dimensiones seguras
-        const width = 800;
-        const height = 600;
+        // Añadir el botón a la barra de herramientas
+        el.appendChild(fullscreenBtn);
         
-        svg.setAttribute('width', width.toString());
-        svg.setAttribute('height', height.toString());
-        svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+        // Añadir la barra de herramientas al contenedor
+        refContainer.current.appendChild(el);
         
-        // Transformar markdown con manejo de errores
-        let rootData;
-        try {
-          const { root } = transformer.transform(markdown);
-          rootData = root;
-        } catch (e) {
-          console.error('Error transformando markdown:', e);
-          return;
-        }
-        
-        // Crear nueva instancia con opciones seguras
-        const mm = Markmap.create(svg, {
-          autoFit: false, // Desactivamos autofit inicial
-          initialExpandLevel: 1,
-          duration: 0, // Sin animación para el renderizado inicial
-          maxWidth: width * 0.8,
-        }, rootData);
-        
-        markmapRef.current = mm;
-        
-        // Dar tiempo al DOM para estabilizarse antes de hacer zoom
-        window.setTimeout(() => {
-          if (!mm) return;
-          
-          // Establecer una posición inicial segura
-          if (mm.state) {
-            // Usar asignación con casting para evitar errores de tipo
-            const state = mm.state as any;
-            state.zoom = 1;
-            state.x = width / 2;
-            state.y = height / 2;
-          }
-          
-          // Intentar ajustar solo después de que el estado es seguro
-          try {
-            mm.fit(); // Ajustar después de establecer estado seguro
-          } catch (e) {
-            console.warn('Error al ajustar el mapa (ignorable):', e);
-          }
-        }, 100);
-        
-        // Agregar la barra de herramientas
-        if (refToolbar.current) {
-          try {
-            const toolbar = new Toolbar();
-            toolbar.attach(mm);
-            refToolbar.current.appendChild(toolbar.render());
-            console.log('Mapa mental creado correctamente');
-          } catch (e) {
-            console.warn('Error al crear la barra de herramientas:', e);
-          }
-        }
-      } catch (error) {
-        console.error('Error al inicializar markmap:', error);
-        cleanupMarkmap();
+        console.log('Mapa mental y barra de herramientas creados correctamente');
       }
-    }, 50); // Pequeño retraso para asegurar que el DOM esté listo
+    } catch (error) {
+      console.error('Error al inicializar markmap:', error);
+    }
     
     // Función de limpieza para el efecto
     return cleanupMarkmap;
-  }, [markdown, mapKey, cleanupMarkmap]); // Incluir mapKey en las dependencias
+  }, [markdown, mapKey, cleanupMarkmap, toggleFullscreen]);
   
   return (
-    <>
-      <div ref={refToolbar} className="markmap-toolbar"></div>
+    <div 
+      ref={refContainer} 
+      className={`markmap-wrapper ${isFullscreen ? 'fullscreen' : ''}`}
+      style={{ position: 'relative' }}
+    >
       <svg 
         ref={refSvg} 
         className="markmap" 
+        width="100%" 
+        height={isFullscreen ? '100vh' : '600px'}
+        viewBox="0 0 800 600"
+        preserveAspectRatio="xMidYMid meet"
         style={{ 
-          display: 'block',
-          margin: '0 auto',
           width: '100%',
-          height: '600px',
+          height: isFullscreen ? '100vh' : '600px',
           maxWidth: '100%',
           background: '#fff'
         }}
       ></svg>
-    </>
+    </div>
   );
-}; 
+};
