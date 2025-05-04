@@ -1,14 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { loadMarkdownFile, getAvailableMarkdownFiles } from '../services/markdownService';
 import { MarkmapViewer } from './Markmap';
-import { DocumentTextIcon, BookOpenIcon, ClockIcon } from '@heroicons/react/24/outline';
 import '../styles/MarkmapSelector.css';
-
-const VERB_CATEGORIES = ['regular', 'irregular'];
-const TENSE_FILES = {
-  regular: ['present_regular', 'past_regular', 'future_regular'],
-  irregular: ['present_irregular', 'past_irregular', 'future_irregular']
-};
 
 type Category = 'regular' | 'irregular';
 
@@ -80,13 +73,6 @@ export const MarkmapSelector = () => {
     setSelectedFile(newFile);
     loadFileContent(newFile, category);
   }, [selectedFile, category, loadFileContent]);
-  
-  // Obtener el título del archivo actual
-  const getCurrentTitle = () => {
-    if (!selectedFile) return '';
-    const fileObj = files[category].find(f => f.id === selectedFile);
-    return fileObj ? fileObj.name : '';
-  };
   
   return (
     <div className="markmap-container">

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useLayoutEffect, useCallback } from 'react';
+import { useRef, useLayoutEffect, useCallback } from 'react';
 import { Transformer } from 'markmap-lib';
 import { Markmap } from 'markmap-view';
 import { Toolbar } from 'markmap-toolbar';
