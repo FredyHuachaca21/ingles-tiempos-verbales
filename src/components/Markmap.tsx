@@ -6,74 +6,101 @@ import 'markmap-toolbar/dist/style.css';
 
 interface MarkmapProps {
   markdown: string;
+  mapKey?: number; // Clave opcional para forzar rerenderizado
 }
 
 // Creamos un transformer fuera del componente para evitar recreaciones
 const transformer = new Transformer();
 
-export const MarkmapViewer = ({ markdown }: MarkmapProps) => {
+export const MarkmapViewer = ({ markdown, mapKey = 0 }: MarkmapProps) => {
   const refSvg = useRef<SVGSVGElement>(null);
   const refToolbar = useRef<HTMLDivElement>(null);
   const markmapRef = useRef<Markmap | null>(null);
+  const timerRef = useRef<number | null>(null);
   
   // Función de limpieza memoizada
   const cleanupMarkmap = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    
     if (refToolbar.current) refToolbar.current.innerHTML = '';
     if (refSvg.current) refSvg.current.innerHTML = '';
+    
+    // Liberar referencias
     markmapRef.current = null;
   }, []);
   
   // Usamos useLayoutEffect para asegurar que las medidas se tomen antes de renderizar
   useLayoutEffect(() => {
+    // Limpiar cualquier instancia previa
+    cleanupMarkmap();
+    
     if (!refSvg.current || !markdown) {
       return cleanupMarkmap;
     }
     
-    // Limpiar cualquier contenido previo
-    cleanupMarkmap();
-    
     // Retrasar ligeramente la creación para asegurar que el DOM esté listo
-    const timerId = setTimeout(() => {
+    timerRef.current = window.setTimeout(() => {
       try {
         console.log('Creando mapa mental con markdown:', markdown.substring(0, 50) + '...');
         
-        // Establecer dimensiones fijas para evitar problemas de NaN
+        // Asegurar que el SVG esté limpio
         const svg = refSvg.current;
         if (!svg) return;
         
-        const width = svg.clientWidth || 800;
-        const height = svg.clientHeight || 600;
+        // Limpiar cualquier contenido previo
+        svg.innerHTML = '';
+        
+        // Establecer dimensiones seguras
+        const width = 800;
+        const height = 600;
         
         svg.setAttribute('width', width.toString());
         svg.setAttribute('height', height.toString());
         svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
         
-        // Transformar markdown
-        const { root } = transformer.transform(markdown);
+        // Transformar markdown con manejo de errores
+        let rootData;
+        try {
+          const { root } = transformer.transform(markdown);
+          rootData = root;
+        } catch (e) {
+          console.error('Error transformando markdown:', e);
+          return;
+        }
         
         // Crear nueva instancia con opciones seguras
         const mm = Markmap.create(svg, {
-          autoFit: true,
-          initialExpandLevel: 1, // Reducir nivel inicial de expansión
+          autoFit: false, // Desactivamos autofit inicial
+          initialExpandLevel: 1,
           duration: 0, // Sin animación para el renderizado inicial
           maxWidth: width * 0.8,
-        }, root);
+        }, rootData);
         
         markmapRef.current = mm;
         
-        // Verificar si podemos ajustar el mapa después de que esté renderizado
-        if (mm && typeof mm.fit === 'function') {
-          // Asegurar que el fit se realice cuando el DOM esté estable
-          requestAnimationFrame(() => {
-            if (mm.state) {
-              try {
-                mm.fit();
-              } catch (e) {
-                console.warn('Error al ajustar el mapa:', e);
-              }
-            }
-          });
-        }
+        // Dar tiempo al DOM para estabilizarse antes de hacer zoom
+        window.setTimeout(() => {
+          if (!mm) return;
+          
+          // Establecer una posición inicial segura
+          if (mm.state) {
+            // Usar asignación con casting para evitar errores de tipo
+            const state = mm.state as any;
+            state.zoom = 1;
+            state.x = width / 2;
+            state.y = height / 2;
+          }
+          
+          // Intentar ajustar solo después de que el estado es seguro
+          try {
+            mm.fit(); // Ajustar después de establecer estado seguro
+          } catch (e) {
+            console.warn('Error al ajustar el mapa (ignorable):', e);
+          }
+        }, 100);
         
         // Agregar la barra de herramientas
         if (refToolbar.current) {
@@ -93,11 +120,8 @@ export const MarkmapViewer = ({ markdown }: MarkmapProps) => {
     }, 50); // Pequeño retraso para asegurar que el DOM esté listo
     
     // Función de limpieza para el efecto
-    return () => {
-      clearTimeout(timerId);
-      cleanupMarkmap();
-    };
-  }, [markdown, cleanupMarkmap]); // Incluir cleanupMarkmap en las dependencias
+    return cleanupMarkmap;
+  }, [markdown, mapKey, cleanupMarkmap]); // Incluir mapKey en las dependencias
   
   return (
     <>

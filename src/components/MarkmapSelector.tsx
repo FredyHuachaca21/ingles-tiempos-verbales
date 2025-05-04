@@ -122,8 +122,11 @@ export const MarkmapSelector = () => {
         {loading ? (
           <div className="loading">Cargando mapa mental...</div>
         ) : (
-          <div key={`markmap-${mapKey}`} className="markmap-wrapper">
-            <MarkmapViewer markdown={markdownContent} />
+          <div key={`markmap-wrapper-${mapKey}`} className="markmap-wrapper">
+            <MarkmapViewer 
+              markdown={markdownContent} 
+              mapKey={mapKey}
+            />
           </div>
         )}
       </div>
