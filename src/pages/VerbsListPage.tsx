@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import regularVerbs from '../data/json/regular_verbs.json';
 import irregularVerbs from '../data/json/irregular_verbs.json';
 import { useTheme } from '../hooks/useTheme';
@@ -8,14 +8,8 @@ export const VerbsListPage = () => {
   const [verbType, setVerbType] = useState<'regular' | 'irregular'>('regular');
   const [searchTerm, setSearchTerm] = useState('');
   const [activeLetterIndex, setActiveLetterIndex] = useState<string | null>(null);
-  const letterRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const { theme } = useTheme();
   const navigate = useNavigate();
-
-  // Función para establecer las referencias para cada letra
-  const setLetterRef = useCallback((letter: string) => (el: HTMLDivElement | null) => {
-    letterRefs.current[letter] = el;
-  }, []);
 
   // Estilos neumórficos optimizados para mejor cambio de tema
   const neuButtonStyle = useMemo(() => ({
@@ -69,8 +63,18 @@ export const VerbsListPage = () => {
   // Función para desplazarse a una letra
   const scrollToLetter = (letter: string) => {
     setActiveLetterIndex(letter);
-    letterRefs.current[letter]?.scrollIntoView({ behavior: 'smooth' });
+    
+    // Buscar un elemento con ID común en ambas vistas
+    const targetElement = document.getElementById(`letter-section-${letter}`);
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth' });
+    }
   };
+  
+  // Crear elementos comunes para anclaje alfabético que existan en todas las vistas
+  const renderLetterSection = (letter: string) => (
+    <div id={`letter-section-${letter}`} style={{ scrollMarginTop: '20px' }}></div>
+  );
 
   return (
     <div className={`container mx-auto px-4 py-6 sm:py-8 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'}`}>
@@ -151,6 +155,7 @@ export const VerbsListPage = () => {
       <div className="relative flex mt-4">
         {/* Contenido principal */}
         <div className="flex-grow pr-10">
+          {/* Vista para escritorio (tablet y mayor) */}
           <div className={`overflow-x-auto hidden sm:block ${theme === 'dark' 
             ? 'shadow-[5px_5px_15px_#121212,-5px_-5px_15px_#3a3a3a]' 
             : 'shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff]'} rounded-xl`}>
@@ -165,7 +170,8 @@ export const VerbsListPage = () => {
               
               <div className={`divide-y ${theme === 'dark' ? 'divide-gray-700' : 'divide-gray-200'}`}>
                 {searchTerm === '' && Object.keys(groupedVerbs).sort().map(letter => (
-                  <div key={letter} ref={setLetterRef(letter)} id={`letter-${letter}`}>
+                  <div key={letter}>
+                    {renderLetterSection(letter)}
                     <div className={`p-2 text-center font-bold ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-800'}`}>
                       {letter}
                     </div>
@@ -211,7 +217,8 @@ export const VerbsListPage = () => {
             <h2 className={`text-lg font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>Lista de Verbos</h2>
             
             {searchTerm === '' && Object.keys(groupedVerbs).sort().map(letter => (
-              <div key={letter} ref={setLetterRef(letter)} id={`letter-${letter}`} className="mb-6">
+              <div key={letter} className="mb-6">
+                {renderLetterSection(letter)}
                 <div className={`p-2 text-center font-bold rounded-lg mb-2 ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-800'}`}>
                   {letter}
                 </div>
@@ -291,6 +298,7 @@ export const VerbsListPage = () => {
                 <button
                   key={letter}
                   onClick={() => scrollToLetter(letter)}
+                  onMouseEnter={() => scrollToLetter(letter)}
                   className={`w-7 h-7 flex items-center justify-center text-sm rounded-full my-0.5 transition-all duration-300 ${
                     activeLetterIndex === letter
                       ? theme === 'light'
