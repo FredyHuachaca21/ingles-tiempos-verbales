@@ -7,6 +7,7 @@ import { BookOpenIcon, ClipboardIcon, PuzzlePieceIcon, AcademicCapIcon } from '@
 export const HomePage = () => {
   const [showMap, setShowMap] = useState(false);
   const { theme } = useTheme();
+  const [activeTab, setActiveTab] = useState<'tenses' | 'verbs'>('tenses');
 
   const cards = [
     {
@@ -72,95 +73,187 @@ export const HomePage = () => {
         </p>
       </div>
 
-      {/* Sección de mapa mental */}
-      <div 
-        className={`rounded-xl overflow-hidden mb-12 ${
-          theme === 'light' ? 'bg-white' : 'bg-gray-800'
-        }`}
-        style={{
-          boxShadow: theme === 'light' 
-            ? '10px 10px 20px rgba(0,0,0,0.05), -10px -10px 20px rgba(255,255,255,0.8)' 
-            : '10px 10px 20px rgba(0,0,0,0.1)'
-        }}
-      >
-        <div className="p-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-            <div>
-              <h2 className={`text-2xl font-bold mb-2 ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>
-                Mapa Mental de Tiempos Verbales
-              </h2>
-              <p className={`${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>
-                Visualiza la estructura de los tiempos verbales en inglés de manera interactiva.
-              </p>
-            </div>
-            <button
-              onClick={() => setShowMap(true)}
-              className={`mt-4 md:mt-0 px-6 py-3 rounded-lg transition-all duration-300 ${
-                theme === 'light' 
-                  ? 'bg-blue-500 hover:bg-blue-600 text-white' 
-                  : 'bg-blue-600 hover:bg-blue-700 text-white'
-              }`}
-              style={{
-                boxShadow: theme === 'light' 
-                  ? '3px 3px 6px rgba(0,0,0,0.1), -3px -3px 6px rgba(255,255,255,0.7)' 
-                  : '3px 3px 6px rgba(0,0,0,0.2)'
-              }}
-            >
-              Ver Mapa Mental
-            </button>
-          </div>
-          <div 
-            className={`h-48 rounded-lg ${
-              theme === 'light' ? 'bg-gray-100' : 'bg-gray-700'
-            } flex items-center justify-center cursor-pointer`}
-            onClick={() => setShowMap(true)}
+      <div className="max-w-3xl mx-auto mb-8 text-center text-gray-600">
+        <p>
+          Aprende de manera visual y efectiva los tiempos verbales y verbos en inglés, 
+          con ejemplos prácticos y explicaciones claras.
+        </p>
+      </div>
+      
+      <div className="mb-8 flex justify-center">
+        <div className="flex rounded-lg overflow-hidden">
+          <button 
+            className={`px-6 py-3 font-medium ${activeTab === 'tenses' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'}`}
+            onClick={() => setActiveTab('tenses')}
           >
-            <div className="text-center">
-              <BookOpenIcon className={`h-12 w-12 mx-auto mb-2 ${theme === 'light' ? 'text-blue-500' : 'text-blue-400'}`} />
-              <p className={`${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>Haz clic para explorar el mapa mental</p>
-            </div>
-          </div>
+            Tiempos Verbales
+          </button>
+          <button 
+            className={`px-6 py-3 font-medium ${activeTab === 'verbs' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'}`}
+            onClick={() => setActiveTab('verbs')}
+          >
+            Verbos
+          </button>
         </div>
       </div>
-
-      {/* Sección de tarjetas de acceso a las secciones principales */}
-      <h2 className={`text-2xl font-bold mb-6 ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>
-        Recursos de Aprendizaje
-      </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {cards.map((card, index) => (
-          <Link
-            key={index}
-            to={card.path}
-            className={`block rounded-xl overflow-hidden transition-all duration-300 h-full ${
-              theme === 'light' ? 'bg-white hover:bg-gray-50' : 'bg-gray-800 hover:bg-gray-700'
-            }`}
-            style={{
-              boxShadow: theme === 'light' 
-                ? '8px 8px 16px rgba(0,0,0,0.05), -8px -8px 16px rgba(255,255,255,0.8)' 
-                : '8px 8px 16px rgba(0,0,0,0.1)',
-            }}
-          >
-            <div className="p-6">
-              <div 
-                className={`w-16 h-16 flex items-center justify-center rounded-full mb-4 ${
-                  theme === 'light' ? 'bg-blue-100' : 'bg-blue-900/30'
-                }`}
-              >
-                <div className={theme === 'light' ? 'text-blue-600' : 'text-blue-300'}>
-                  {card.icon}
-                </div>
+      
+      {activeTab === 'tenses' ? (
+        // Sección de Tiempos Verbales
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold mb-6 text-center">
+            Explora los Tiempos Verbales
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-white shadow-md rounded-lg overflow-hidden">
+              <div className="p-6">
+                <h3 className="text-xl font-bold mb-2 text-blue-600">Presente</h3>
+                <p className="text-gray-600 mb-4">
+                  Aprende a hablar sobre acciones habituales y verdades generales.
+                </p>
+                <Link 
+                  to="/tenses/simple-present" 
+                  className="inline-block px-4 py-2 bg-blue-100 text-blue-700 rounded"
+                >
+                  Ver más
+                </Link>
               </div>
-              <h3 className={`text-xl font-bold mb-2 ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>
-                {card.title}
-              </h3>
-              <p className={`${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>
-                {card.description}
-              </p>
             </div>
-          </Link>
-        ))}
-      </div>
+            
+            <div className="bg-white shadow-md rounded-lg overflow-hidden">
+              <div className="p-6">
+                <h3 className="text-xl font-bold mb-2 text-blue-600">Pasado</h3>
+                <p className="text-gray-600 mb-4">
+                  Descubre cómo contar historias y hablar de experiencias pasadas.
+                </p>
+                <Link 
+                  to="/tenses/simple-past" 
+                  className="inline-block px-4 py-2 bg-blue-100 text-blue-700 rounded"
+                >
+                  Ver más
+                </Link>
+              </div>
+            </div>
+            
+            <div className="bg-white shadow-md rounded-lg overflow-hidden">
+              <div className="p-6">
+                <h3 className="text-xl font-bold mb-2 text-blue-600">Futuro</h3>
+                <p className="text-gray-600 mb-4">
+                  Aprende a expresar planes, intenciones y predicciones.
+                </p>
+                <Link 
+                  to="/tenses/simple-future" 
+                  className="inline-block px-4 py-2 bg-blue-100 text-blue-700 rounded"
+                >
+                  Ver más
+                </Link>
+              </div>
+            </div>
+          </div>
+          
+          <div className="text-center mb-8">
+            <Link 
+              to="/tenses" 
+              className="inline-block px-6 py-3 bg-blue-600 text-white font-medium rounded-lg"
+            >
+              Ver todos los tiempos verbales
+            </Link>
+          </div>
+          
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <h3 className="text-xl font-bold mb-4">Mapas Mentales</h3>
+            <p className="mb-4">
+              Visualiza los tiempos verbales con mapas mentales interactivos
+            </p>
+            <MarkmapSelector />
+          </div>
+        </div>
+      ) : (
+        // Sección de Verbos
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold mb-6 text-center">
+            Domina los Verbos en Inglés
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div className="bg-white shadow-md rounded-lg overflow-hidden">
+              <div className="p-6">
+                <h3 className="text-xl font-bold mb-2 text-emerald-600">Lista de Verbos</h3>
+                <p className="text-gray-600 mb-4">
+                  Explora listas completas de verbos regulares e irregulares con sus formas.
+                </p>
+                <Link 
+                  to="/verbs/list" 
+                  className="inline-block px-4 py-2 bg-emerald-100 text-emerald-700 rounded"
+                >
+                  Ver lista completa
+                </Link>
+              </div>
+            </div>
+            
+            <div className="bg-white shadow-md rounded-lg overflow-hidden">
+              <div className="p-6">
+                <h3 className="text-xl font-bold mb-2 text-indigo-600">Tarjetas de Estudio</h3>
+                <p className="text-gray-600 mb-4">
+                  Practica con flashcards interactivas para memorizar verbos rápidamente.
+                </p>
+                <Link 
+                  to="/verbs/flashcards" 
+                  className="inline-block px-4 py-2 bg-indigo-100 text-indigo-700 rounded"
+                >
+                  Practicar con tarjetas
+                </Link>
+              </div>
+            </div>
+            
+            <div className="bg-white shadow-md rounded-lg overflow-hidden">
+              <div className="p-6">
+                <h3 className="text-xl font-bold mb-2 text-amber-600">Conjugación de Verbos</h3>
+                <p className="text-gray-600 mb-4">
+                  Aprende a conjugar cualquier verbo en todos los tiempos verbales.
+                </p>
+                <Link 
+                  to="/verbs/conjugation" 
+                  className="inline-block px-4 py-2 bg-amber-100 text-amber-700 rounded"
+                >
+                  Conjugar verbos
+                </Link>
+              </div>
+            </div>
+            
+            <div className="bg-white shadow-md rounded-lg overflow-hidden">
+              <div className="p-6">
+                <h3 className="text-xl font-bold mb-2 text-purple-600">Patrones de Verbos Irregulares</h3>
+                <p className="text-gray-600 mb-4">
+                  Descubre los patrones que siguen los verbos irregulares para memorizarlos más fácilmente.
+                </p>
+                <Link 
+                  to="/verbs/patterns" 
+                  className="inline-block px-4 py-2 bg-purple-100 text-purple-700 rounded"
+                >
+                  Ver patrones
+                </Link>
+              </div>
+            </div>
+          </div>
+          
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <h3 className="text-xl font-bold mb-4">¿Por qué estudiar verbos específicamente?</h3>
+            <p className="mb-2">
+              Los verbos son fundamentales en cualquier idioma. Dominar los verbos en inglés te permitirá:
+            </p>
+            <ul className="list-disc pl-5 mb-4 space-y-1">
+              <li>Comunicarte con mayor precisión y fluidez</li>
+              <li>Entender mejor textos y conversaciones en inglés</li>
+              <li>Construir correctamente oraciones en todos los tiempos verbales</li>
+              <li>Expresar acciones, estados y procesos con claridad</li>
+            </ul>
+            <p>
+              Comienza a practicar con nuestras herramientas interactivas y mejora tu dominio del inglés.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }; 

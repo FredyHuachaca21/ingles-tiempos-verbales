@@ -10,7 +10,7 @@ interface VerbTenseCardProps {
   path: string;
 }
 
-export const VerbTenseCard = ({ id, name, nameEs, shortDesc, category, path }: VerbTenseCardProps) => {
+export const VerbTenseCard = ({ name, nameEs, shortDesc, category, path }: VerbTenseCardProps) => {
   const navigate = useNavigate();
   const { theme } = useTheme();
   
