@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import regularVerbs from '../data/json/regular_verbs.json';
 import irregularVerbs from '../data/json/irregular_verbs.json';
 import { useTheme } from '../hooks/useTheme';
@@ -10,7 +10,6 @@ export const VerbsListPage = () => {
   const [activeLetterIndex, setActiveLetterIndex] = useState<string | null>(null);
   const { theme } = useTheme();
   const navigate = useNavigate();
-  const sectionRefs = useRef<{[key: string]: HTMLDivElement | null}>({});
 
   // Estilos neumórficos optimizados para mejor cambio de tema
   const neuButtonStyle = useMemo(() => ({
@@ -60,18 +59,6 @@ export const VerbsListPage = () => {
     
     return grouped;
   }, [filteredVerbs]);
-
-  // Crear elementos comunes para anclaje alfabético que existan en todas las vistas
-  const renderLetterSection = (letter: string) => (
-    <div 
-      id={`letter-section-${letter}`}
-      ref={(el) => {
-        sectionRefs.current[letter] = el;
-      }}
-      className="scroll-mt-20"
-      style={{ height: '1px', marginTop: '-1px' }}
-    />
-  );
 
   // Función simple para desplazarse a una letra
   const scrollToLetter = (letter: string) => {
