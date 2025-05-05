@@ -3,6 +3,7 @@ import { Transformer } from 'markmap-lib';
 import { Markmap } from 'markmap-view';
 import { Toolbar } from 'markmap-toolbar';
 import 'markmap-toolbar/dist/style.css';
+import { useTheme, THEME_CHANGE_EVENT } from '../../hooks/useTheme';
 
 interface MarkmapProps {
   markdown: string;
@@ -19,6 +20,8 @@ export const MarkmapViewer = ({ markdown, mapKey = 0 }: MarkmapProps) => {
   const toolbarRef = useRef<HTMLElement | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const { theme } = useTheme();
+  const [forceUpdate, setForceUpdate] = useState(0);
   
   // Función para alternar el modo de pantalla completa
   const toggleFullscreen = useCallback(() => {
@@ -62,6 +65,41 @@ export const MarkmapViewer = ({ markdown, mapKey = 0 }: MarkmapProps) => {
     };
   }, []);
   
+  // Escuchar evento personalizado de cambio de tema
+  useEffect(() => {
+    const handleThemeChange = (event: Event) => {
+      const customEvent = event as CustomEvent<{theme: string}>;
+      console.log('MarkmapViewer detectó cambio de tema:', customEvent.detail.theme);
+      
+      // Forzar una actualización del componente
+      setForceUpdate(prev => prev + 1);
+      
+      // Actualizar clases y estilos del SVG
+      if (refSvg.current) {
+        if (customEvent.detail.theme === 'dark') {
+          refSvg.current.classList.add('dark-theme-markmap');
+        } else {
+          refSvg.current.classList.remove('dark-theme-markmap');
+        }
+      }
+      
+      // Actualizar la barra de herramientas si existe
+      if (toolbarRef.current) {
+        if (customEvent.detail.theme === 'dark') {
+          toolbarRef.current.classList.add('dark');
+        } else {
+          toolbarRef.current.classList.remove('dark');
+        }
+      }
+    };
+    
+    window.addEventListener(THEME_CHANGE_EVENT, handleThemeChange);
+    
+    return () => {
+      window.removeEventListener(THEME_CHANGE_EVENT, handleThemeChange);
+    };
+  }, []);
+  
   // Función de limpieza memoizada
   const cleanupMarkmap = useCallback(() => {
     // Limpiar cualquier temporizador pendiente
@@ -90,6 +128,85 @@ export const MarkmapViewer = ({ markdown, mapKey = 0 }: MarkmapProps) => {
       cleanupMarkmap();
     };
   }, [cleanupMarkmap]);
+
+  // Aplicar estilo para el modo oscuro al SVG directamente
+  useEffect(() => {
+    if (!refSvg.current) return;
+
+    // Cuando el tema cambia, actualizar las clases del SVG
+    if (theme === 'dark') {
+      refSvg.current.classList.add('dark-theme-markmap');
+    } else {
+      refSvg.current.classList.remove('dark-theme-markmap');
+    }
+
+    // Aplicar estilos CSS personalizados para el modo oscuro
+    const styleEl = document.getElementById('markmap-theme-styles');
+    if (!styleEl) {
+      const newStyle = document.createElement('style');
+      newStyle.id = 'markmap-theme-styles';
+      newStyle.textContent = `
+        /* Estilos para modo claro */
+        .markmap-node {
+          fill: #333333 !important;
+          font-size: 16px !important;
+          font-weight: 500 !important;
+        }
+        .markmap-node-circle {
+          stroke: #0284c7 !important;
+          stroke-width: 1.5px !important;
+          fill: white !important;
+        }
+        .markmap-link {
+          stroke: #0284c7 !important;
+          stroke-width: 1.5px !important;
+        }
+        
+        /* Estilos para modo oscuro */
+        .dark-theme-markmap .markmap-node {
+          fill: #ffffff !important;
+          font-size: 16px !important;
+          font-weight: 500 !important;
+        }
+        .dark-theme-markmap .markmap-node-circle {
+          stroke: #38bdf8 !important;
+          stroke-width: 1.5px !important;
+          fill: #1e293b !important;
+        }
+        .dark-theme-markmap .markmap-link {
+          stroke: #38bdf8 !important;
+          stroke-width: 1.5px !important;
+        }
+        
+        /* Estilos para toolbar */
+        .mm-toolbar {
+          background-color: #f3f4f6 !important;
+          border-color: #e5e7eb !important;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
+        }
+        .mm-toolbar-item {
+          color: #374151 !important;
+        }
+        .mm-toolbar-item:hover {
+          background-color: #e5e7eb !important;
+        }
+        
+        /* Toolbar en modo oscuro */
+        .dark .mm-toolbar {
+          background-color: #374151 !important;
+          border-color: #4b5563 !important;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.3) !important;
+        }
+        .dark .mm-toolbar-item {
+          color: #e5e7eb !important;
+        }
+        .dark .mm-toolbar-item:hover {
+          background-color: #4b5563 !important;
+        }
+      `;
+      document.head.appendChild(newStyle);
+    }
+  }, [theme, forceUpdate]);
   
   // Crear y configurar el mapa mental
   useLayoutEffect(() => {
@@ -111,16 +228,23 @@ export const MarkmapViewer = ({ markdown, mapKey = 0 }: MarkmapProps) => {
         
         // Asegurarnos de que el SVG tenga dimensiones explícitas y consistentes
         const parentWidth = svg.parentElement?.clientWidth || 800;
-        const parentHeight = svg.parentElement?.clientHeight || 600;
+        const parentHeight = isFullscreen ? window.innerHeight : 480; // Reducir altura cuando no está en fullscreen
         
         // Forzar dimensiones explícitas para evitar NaN
         svg.style.width = '100%';
-        svg.style.height = isFullscreen ? '100vh' : '600px';
+        svg.style.height = isFullscreen ? '100vh' : '480px'; // Altura ajustada
         
         // Establecer atributos dimensionales
         svg.setAttribute('width', `${parentWidth}px`);
         svg.setAttribute('height', `${parentHeight}px`);
         svg.setAttribute('viewBox', `0 0 ${parentWidth} ${parentHeight}`);
+        
+        // Aplicar clase de tema oscuro si es necesario
+        if (theme === 'dark') {
+          svg.classList.add('dark-theme-markmap');
+        } else {
+          svg.classList.remove('dark-theme-markmap');
+        }
         
         // Esperar a que las dimensiones se apliquen
         requestAnimationFrame(() => {
@@ -139,9 +263,9 @@ export const MarkmapViewer = ({ markdown, mapKey = 0 }: MarkmapProps) => {
             // Configurar un estado inicial seguro para evitar NaN
             if (mm.state) {
               const state = mm.state as any;
-              state.zoom = 1; // Zoom inicial seguro
+              state.zoom = 1.2; // Zoom inicial seguro
               state.x = parentWidth / 2;
-              state.y = parentHeight / 2;
+              state.y = parentHeight / 2 + 30;
             }
             
             markmapRef.current = mm;
@@ -163,7 +287,14 @@ export const MarkmapViewer = ({ markdown, mapKey = 0 }: MarkmapProps) => {
               el.style.position = 'absolute';
               el.style.top = '0.5rem';
               el.style.right = '0.5rem';
-              el.style.zIndex = '100';
+              el.style.zIndex = '5'; // Reducir z-index para que no tape otros elementos
+              
+              // Aplicar clase para el modo oscuro
+              if (theme === 'dark') {
+                el.classList.add('dark');
+              } else {
+                el.classList.remove('dark');
+              }
               
               // Añadir botón de pantalla completa personalizado
               const fullscreenBtn = document.createElement('div');
@@ -204,26 +335,27 @@ export const MarkmapViewer = ({ markdown, mapKey = 0 }: MarkmapProps) => {
     
     // Función de limpieza para el efecto
     return cleanupMarkmap;
-  }, [markdown, mapKey, cleanupMarkmap, toggleFullscreen, isFullscreen]);
+  }, [markdown, mapKey, cleanupMarkmap, toggleFullscreen, isFullscreen, theme, forceUpdate]);
   
   return (
     <div 
       ref={refContainer} 
-      className={`markmap-wrapper ${isFullscreen ? 'fullscreen' : ''}`}
-      style={{ position: 'relative' }}
+      className={`${isFullscreen ? 'fixed inset-0 z-50 bg-white dark:bg-gray-900' : 'relative w-full h-[480px]'}`}
+      style={{ 
+        zIndex: isFullscreen ? 40 : 'auto',
+        position: isFullscreen ? 'fixed' : 'relative'
+      }}
     >
       <svg 
         ref={refSvg} 
-        className="markmap" 
+        className={`w-full rounded-lg ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}
         width="100%" 
-        height={isFullscreen ? '100vh' : '600px'}
+        height={isFullscreen ? '100vh' : '480px'}
         viewBox="0 0 800 600"
         preserveAspectRatio="xMidYMid meet"
         style={{ 
-          width: '100%',
-          height: isFullscreen ? '100vh' : '600px',
-          maxWidth: '100%',
-          background: '#fff'
+          height: isFullscreen ? '100vh' : '480px',
+          position: 'relative'
         }}
       ></svg>
     </div>
