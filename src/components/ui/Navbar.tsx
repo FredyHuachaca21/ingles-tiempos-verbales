@@ -37,24 +37,23 @@ export const Navbar = ({ title = 'Tiempos Verbales en Inglés' }: NavbarProps) =
           <div className="hidden md:flex items-center space-x-4">
             <Link 
               to="/" 
-              className={`py-2 px-3 rounded-md font-medium transition-all duration-300 ${
+              className={`px-3 py-2 rounded-md text-base font-medium transition-all duration-300 ${
                 theme === 'light' 
-                  ? 'text-gray-700 hover:bg-gray-100' 
-                  : 'text-gray-200 hover:bg-gray-700'
+                  ? 'text-gray-700 hover:text-gray-900' 
+                  : 'text-gray-300 hover:text-white'
               }`}
-              style={{
-                boxShadow: theme === 'light' ? 'inset 0 0 0 transparent' : 'inset 0 0 0 transparent',
-              }}
-              onMouseEnter={e => {
-                if (theme === 'light') {
-                  e.currentTarget.style.boxShadow = 'inset 2px 2px 5px rgba(0,0,0,0.05), inset -2px -2px 5px rgba(255,255,255,0.8)';
-                }
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.boxShadow = 'inset 0 0 0 transparent';
-              }}
             >
               Inicio
+            </Link>
+            <Link 
+              to="/tenses" 
+              className={`px-3 py-2 rounded-md text-base font-medium transition-all duration-300 ${
+                theme === 'light' 
+                  ? 'text-gray-700 hover:text-gray-900' 
+                  : 'text-gray-300 hover:text-white'
+              }`}
+            >
+              Tiempos Verbales
             </Link>
             <Link 
               to="/regulares" 
@@ -168,6 +167,13 @@ export const Navbar = ({ title = 'Tiempos Verbales en Inglés' }: NavbarProps) =
               : 'text-gray-200 hover:bg-gray-700'
           }`}>
             Inicio
+          </Link>
+          <Link to="/tenses" className={`block py-2 px-3 rounded-md font-medium transition-all duration-300 ${
+            theme === 'light' 
+              ? 'text-gray-700 hover:bg-gray-100' 
+              : 'text-gray-200 hover:bg-gray-700'
+          }`}>
+            Tiempos Verbales
           </Link>
           <Link to="/regulares" className={`block py-2 px-3 rounded-md font-medium transition-all duration-300 ${
             theme === 'light' 
