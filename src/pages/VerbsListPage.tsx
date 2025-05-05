@@ -104,28 +104,28 @@ export const VerbsListPage = () => {
         </div>
       </div>
 
-      <div className={`overflow-x-auto ${theme === 'dark' 
+      <div className={`overflow-x-auto hidden sm:block ${theme === 'dark' 
         ? 'shadow-[5px_5px_15px_#121212,-5px_-5px_15px_#3a3a3a]' 
         : 'shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff]'} rounded-xl`}>
         <div className={`min-w-full ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
-          <div className={`grid grid-cols-3 sm:grid-cols-5 ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-gray-100'} font-bold text-sm sm:text-base`}>
+          <div className={`grid grid-cols-5 ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-gray-100'} font-bold text-sm sm:text-base`}>
             <div className="p-3 sm:p-4 border-b">Infinitivo</div>
-            <div className="p-3 sm:p-4 border-b hidden sm:block">Pasado Simple</div>
+            <div className="p-3 sm:p-4 border-b">Pasado Simple</div>
             <div className="p-3 sm:p-4 border-b">Participio Pasado</div>
-            <div className="p-3 sm:p-4 border-b hidden sm:block">Gerundio</div>
+            <div className="p-3 sm:p-4 border-b">Gerundio</div>
             <div className="p-3 sm:p-4 border-b">Traducción</div>
           </div>
           
           <div className={`divide-y ${theme === 'dark' ? 'divide-gray-700' : 'divide-gray-200'}`}>
             {filteredVerbs.length > 0 ? (
               filteredVerbs.map((verb, index) => (
-                <div key={index} className={`grid grid-cols-3 sm:grid-cols-5 ${theme === 'dark' 
+                <div key={index} className={`grid grid-cols-5 ${theme === 'dark' 
                   ? 'hover:bg-gray-700' 
                   : 'hover:bg-gray-50'} text-sm sm:text-base`}>
                   <div className="p-3 sm:p-4 font-medium">{verb.infinitive}</div>
-                  <div className="p-3 sm:p-4 hidden sm:block">{verb.past_simple}</div>
+                  <div className="p-3 sm:p-4">{verb.past_simple}</div>
                   <div className="p-3 sm:p-4">{verb.past_participle}</div>
-                  <div className="p-3 sm:p-4 hidden sm:block">{verb.gerund}</div>
+                  <div className="p-3 sm:p-4">{verb.gerund}</div>
                   <div className="p-3 sm:p-4">{verb.translation}</div>
                 </div>
               ))
@@ -138,9 +138,9 @@ export const VerbsListPage = () => {
         </div>
       </div>
 
-      {/* Vista detallada para móviles */}
-      <div className="sm:hidden mt-6">
-        <h2 className="text-lg font-semibold mb-3">Detalles completos</h2>
+      {/* Vista con tarjetas para móviles */}
+      <div className="sm:hidden">
+        <h2 className={`text-lg font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>Lista de Verbos</h2>
         {filteredVerbs.length > 0 ? (
           <div className="space-y-4">
             {filteredVerbs.map((verb, index) => (
