@@ -81,7 +81,7 @@ export const HomePage = () => {
       description: "Aprende verbos regulares e irregulares con sus conjugaciones",
       color: theme === 'light' ? "from-amber-200 to-amber-100" : "from-amber-900/30 to-amber-800/30",
       textColor: theme === 'light' ? "text-amber-900" : "text-amber-300",
-      action: () => navigate('/verbs/list'),
+      action: () => navigate('/verbs'),
       icon: "🔤"
     }
   ];

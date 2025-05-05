@@ -8,6 +8,7 @@ import { VerbsListPage } from './pages/VerbsListPage';
 import { VerbsFlashcardsPage } from './pages/VerbsFlashcardsPage';
 import { VerbConjugationPage } from './pages/VerbConjugationPage';
 import { VerbPatternsPage } from './pages/VerbPatternsPage';
+import { VerbsNavigationPage } from './pages/VerbsNavigationPage';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/tenses" element={<VerbTensesPage />} />
             <Route path="/tenses/:id" element={<VerbTenseDetailPage />} />
+            <Route path="/verbs" element={<VerbsNavigationPage />} />
             <Route path="/verbs/list" element={<VerbsListPage />} />
             <Route path="/verbs/flashcards" element={<VerbsFlashcardsPage />} />
             <Route path="/verbs/conjugation" element={<VerbConjugationPage />} />
