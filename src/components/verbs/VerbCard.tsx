@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTheme } from '../../hooks/useTheme';
 
 interface VerbCardProps {
   verb: {
@@ -12,13 +13,24 @@ interface VerbCardProps {
 
 export const VerbCard = ({ verb }: VerbCardProps) => {
   const [flipped, setFlipped] = useState(false);
+  const { theme } = useTheme();
+
+  // Estilos adaptados para modo oscuro
+  const cardStyle = {
+    perspective: '1000px', 
+    height: '250px',
+    backgroundColor: theme === 'light' ? '#ffffff' : '#1e293b',
+    boxShadow: theme === 'light' 
+      ? '0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08)' 
+      : '0 4px 6px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3)'
+  };
 
   return (
     <div 
-      className={`w-full bg-white rounded-xl shadow-md overflow-hidden cursor-pointer transition-transform duration-700 transform ${
+      className={`w-full rounded-xl overflow-hidden cursor-pointer transition-transform duration-700 transform ${
         flipped ? 'scale-[-1,1]' : ''
       }`}
-      style={{ perspective: '1000px', height: '250px' }}
+      style={cardStyle}
       onClick={() => setFlipped(!flipped)}
     >
       <div className="relative w-full h-full">
@@ -26,10 +38,10 @@ export const VerbCard = ({ verb }: VerbCardProps) => {
         <div 
           className={`absolute w-full h-full p-6 flex flex-col justify-between transition-opacity duration-300 ${
             flipped ? 'opacity-0' : 'opacity-100'
-          }`}
+          } ${theme === 'dark' ? 'text-gray-100' : 'text-gray-800'}`}
         >
           <div>
-            <h2 className="text-2xl font-bold text-center mb-2 text-blue-600">
+            <h2 className={`text-2xl font-bold text-center mb-2 ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}`}>
               {verb.infinitive}
             </h2>
             <div className="grid grid-cols-1 gap-2">
@@ -47,7 +59,7 @@ export const VerbCard = ({ verb }: VerbCardProps) => {
               </div>
             </div>
           </div>
-          <div className="text-sm text-gray-500 text-center">
+          <div className={`text-sm text-center ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}`}>
             (Toca para ver la traducción)
           </div>
         </div>
@@ -56,15 +68,15 @@ export const VerbCard = ({ verb }: VerbCardProps) => {
         <div 
           className={`absolute w-full h-full p-6 flex flex-col justify-center items-center transition-opacity duration-300 transform scale-x-[-1] ${
             flipped ? 'opacity-100' : 'opacity-0'
-          }`}
+          } ${theme === 'dark' ? 'text-gray-100' : 'text-gray-800'}`}
         >
-          <h2 className="text-3xl font-bold mb-4 text-green-600">
+          <h2 className={`text-3xl font-bold mb-4 ${theme === 'light' ? 'text-green-600' : 'text-green-400'}`}>
             {verb.translation}
           </h2>
           <div className="text-xl">
             {verb.infinitive}
           </div>
-          <div className="mt-4 text-sm text-gray-500">
+          <div className={`mt-4 text-sm ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}`}>
             (Toca para ver las conjugaciones)
           </div>
         </div>

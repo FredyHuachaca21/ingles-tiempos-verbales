@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import irregularVerbs from '../../data/json/irregular_verbs.json';
+import { useTheme } from '../../hooks/useTheme';
 
 type VerbPattern = {
   pattern: string;
@@ -14,6 +15,7 @@ type VerbPattern = {
 
 export const VerbPatternGrid = () => {
   const [selectedPattern, setSelectedPattern] = useState<VerbPattern | null>(null);
+  const { theme } = useTheme();
 
   // Definir algunos patrones comunes en verbos irregulares
   const patterns: VerbPattern[] = [
@@ -83,8 +85,8 @@ export const VerbPatternGrid = () => {
   const sortedPatterns = [...patterns].sort((a, b) => b.verbs.length - a.verbs.length);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h2 className="text-2xl font-bold mb-6 text-center">
+    <div className={`container mx-auto px-4 py-8 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'}`}>
+      <h2 className={`text-2xl font-bold mb-6 text-center ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
         Patrones de Verbos Irregulares
       </h2>
       
@@ -94,47 +96,61 @@ export const VerbPatternGrid = () => {
             key={index}
             className={`border rounded-lg p-4 cursor-pointer transition-all ${
               selectedPattern?.pattern === pattern.pattern 
-                ? 'bg-blue-100 border-blue-400' 
-                : 'bg-white hover:bg-gray-50'
+                ? theme === 'light'
+                  ? 'bg-blue-100 border-blue-400' 
+                  : 'bg-blue-900/30 border-blue-700'
+                : theme === 'light'
+                  ? 'bg-white hover:bg-gray-50 border-gray-200'
+                  : 'bg-gray-800 hover:bg-gray-700 border-gray-700'
             }`}
             onClick={() => setSelectedPattern(pattern)}
           >
             <h3 className="font-bold mb-2">{pattern.description}</h3>
             <div className="flex justify-between text-sm">
               <span>{pattern.verbs.length} verbos</span>
-              <span className="text-blue-600">Ver detalles</span>
+              <span className={theme === 'light' ? 'text-blue-600' : 'text-blue-400'}>Ver detalles</span>
             </div>
           </div>
         ))}
       </div>
       
       {selectedPattern && (
-        <div className="bg-white border rounded-lg p-6 shadow-md">
-          <h3 className="text-xl font-bold mb-4">{selectedPattern.description}</h3>
+        <div className={`border rounded-lg p-6 shadow-md ${
+          theme === 'light' 
+            ? 'bg-white border-gray-200' 
+            : 'bg-gray-800 border-gray-700'
+        }`}>
+          <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
+            {selectedPattern.description}
+          </h3>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+            <table className={`min-w-full divide-y ${theme === 'light' ? 'divide-gray-200' : 'divide-gray-700'}`}>
               <thead>
-                <tr className="bg-gray-100">
-                  <th className="px-4 py-2 text-left">Infinitivo</th>
-                  <th className="px-4 py-2 text-left">Pasado Simple</th>
-                  <th className="px-4 py-2 text-left">Participio Pasado</th>
-                  <th className="px-4 py-2 text-left">Traducción</th>
+                <tr className={theme === 'light' ? 'bg-gray-100' : 'bg-gray-700'}>
+                  <th className={`px-4 py-2 text-left ${theme === 'dark' ? 'text-gray-300' : ''}`}>Infinitivo</th>
+                  <th className={`px-4 py-2 text-left ${theme === 'dark' ? 'text-gray-300' : ''}`}>Pasado Simple</th>
+                  <th className={`px-4 py-2 text-left ${theme === 'dark' ? 'text-gray-300' : ''}`}>Participio Pasado</th>
+                  <th className={`px-4 py-2 text-left ${theme === 'dark' ? 'text-gray-300' : ''}`}>Traducción</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className={`divide-y ${theme === 'light' ? 'divide-gray-200' : 'divide-gray-700'}`}>
                 {selectedPattern.verbs.map((verb, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
+                  <tr key={index} className={
+                    theme === 'light' 
+                      ? 'hover:bg-gray-50' 
+                      : 'hover:bg-gray-700'
+                  }>
                     <td className="px-4 py-2 font-medium">{verb.infinitive}</td>
                     <td className="px-4 py-2">{verb.past_simple}</td>
                     <td className="px-4 py-2">{verb.past_participle}</td>
-                    <td className="px-4 py-2 text-gray-600">{verb.translation}</td>
+                    <td className={`px-4 py-2 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>{verb.translation}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
           
-          <div className="mt-4 text-sm text-gray-600">
+          <div className={`mt-4 text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
             <p>
               <strong>Consejo:</strong> Memorizar verbos en grupos con patrones similares facilita su aprendizaje.
               Practica la conjugación de estos verbos utilizando las mismas reglas.

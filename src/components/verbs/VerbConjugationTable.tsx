@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTheme } from '../../hooks/useTheme';
 
 type VerbTense = {
   name: string;
@@ -25,6 +26,8 @@ interface VerbConjugationTableProps {
 }
 
 export const VerbConjugationTable: React.FC<VerbConjugationTableProps> = ({ verb }) => {
+  const { theme } = useTheme();
+  
   // Generar conjugaciones del verbo en diferentes tiempos
   const generateConjugations = () => {
     const tenses: VerbTense[] = [
@@ -102,28 +105,32 @@ export const VerbConjugationTable: React.FC<VerbConjugationTableProps> = ({ verb
 
   return (
     <div className="overflow-x-auto">
-      <div className="text-xl font-bold mb-4 text-center text-blue-600">
-        {verb.infinitive} <span className="text-gray-500">({verb.translation})</span>
+      <div className={`text-xl font-bold mb-4 text-center ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}`}>
+        {verb.infinitive} <span className={theme === 'light' ? 'text-gray-500' : 'text-gray-400'}>({verb.translation})</span>
       </div>
       
-      <table className="min-w-full bg-white border border-gray-200">
+      <table className={`min-w-full border ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700'}`}>
         <thead>
-          <tr className="bg-gray-100">
-            <th className="border p-2">Pronombre</th>
+          <tr className={theme === 'light' ? 'bg-gray-100' : 'bg-gray-700'}>
+            <th className={`border p-2 ${theme === 'light' ? 'border-gray-200' : 'border-gray-700'}`}>Pronombre</th>
             {conjugations.map((tense, index) => (
-              <th key={index} className="border p-2">
+              <th key={index} className={`border p-2 ${theme === 'light' ? 'border-gray-200' : 'border-gray-700'}`}>
                 <div>{tense.name}</div>
-                <div className="text-sm text-gray-600">{tense.nameEs}</div>
+                <div className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>{tense.nameEs}</div>
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
           {['I', 'you', 'he', 'she', 'it', 'we', 'they'].map((pronoun, index) => (
-            <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : ''}>
-              <td className="border p-2 font-medium">{pronoun}</td>
+            <tr key={index} className={
+              index % 2 === 0 
+                ? theme === 'light' ? 'bg-gray-50' : 'bg-gray-750' 
+                : theme === 'light' ? 'bg-white' : 'bg-gray-800'
+            }>
+              <td className={`border p-2 font-medium ${theme === 'light' ? 'border-gray-200' : 'border-gray-700'}`}>{pronoun}</td>
               {conjugations.map((tense, tenseIndex) => (
-                <td key={tenseIndex} className="border p-2">
+                <td key={tenseIndex} className={`border p-2 ${theme === 'light' ? 'border-gray-200' : 'border-gray-700'}`}>
                   {tense.forms[pronoun as keyof typeof tense.forms]}
                 </td>
               ))}
@@ -132,7 +139,7 @@ export const VerbConjugationTable: React.FC<VerbConjugationTableProps> = ({ verb
         </tbody>
       </table>
       
-      <div className="mt-4 grid grid-cols-2 gap-4">
+      <div className={`mt-4 grid grid-cols-2 gap-4 ${theme === 'light' ? 'text-gray-800' : 'text-gray-200'}`}>
         <div>
           <h3 className="font-medium mb-1">Formas básicas:</h3>
           <ul className="list-disc pl-5">
