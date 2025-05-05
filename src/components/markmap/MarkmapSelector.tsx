@@ -76,7 +76,7 @@ export const MarkmapSelector = () => {
   }, [selectedFile, category, loadFileContent]);
   
   return (
-    <div className="flex flex-col w-full h-full space-y-4">
+    <div className="flex flex-col w-full h-full space-y-4 pb-10">
       <div 
         className={`p-4 rounded-xl transition-all duration-300 ${
           theme === 'light' ? 'bg-white' : 'bg-gray-800'
@@ -149,7 +149,11 @@ export const MarkmapSelector = () => {
           boxShadow: theme === 'light' 
             ? '5px 5px 10px rgba(0,0,0,0.05), -5px -5px 10px rgba(255,255,255,0.8)' 
             : '5px 5px 10px rgba(0,0,0,0.1)',
-          minHeight: '70vh'
+          minHeight: '70vh',
+          height: 'calc(100vh - 250px)',
+          display: 'flex',
+          flexDirection: 'column',
+          marginBottom: '2rem'
         }}
       >
         {loading ? (
@@ -170,7 +174,7 @@ export const MarkmapSelector = () => {
             </div>
           </div>
         ) : (
-          <div key={`markmap-wrapper-${mapKey}`} className="w-full h-full" style={{ minHeight: '70vh' }}>
+          <div key={`markmap-wrapper-${mapKey}`} className="w-full h-full flex-grow" style={{ height: '100%' }}>
             <MarkmapViewer 
               markdown={markdownContent} 
               mapKey={mapKey}

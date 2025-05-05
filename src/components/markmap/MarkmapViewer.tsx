@@ -140,72 +140,107 @@ export const MarkmapViewer = ({ markdown, mapKey = 0 }: MarkmapProps) => {
       refSvg.current.classList.remove('dark-theme-markmap');
     }
 
-    // Aplicar estilos CSS personalizados para el modo oscuro
-    const styleEl = document.getElementById('markmap-theme-styles');
-    if (!styleEl) {
-      const newStyle = document.createElement('style');
-      newStyle.id = 'markmap-theme-styles';
-      newStyle.textContent = `
-        /* Estilos para modo claro */
-        .markmap-node {
-          fill: #333333 !important;
-          font-size: 16px !important;
-          font-weight: 500 !important;
-        }
-        .markmap-node-circle {
-          stroke: #0284c7 !important;
-          stroke-width: 1.5px !important;
-          fill: white !important;
-        }
-        .markmap-link {
-          stroke: #0284c7 !important;
-          stroke-width: 1.5px !important;
-        }
-        
-        /* Estilos para modo oscuro */
-        .dark-theme-markmap .markmap-node {
-          fill: #ffffff !important;
-          font-size: 16px !important;
-          font-weight: 500 !important;
-        }
-        .dark-theme-markmap .markmap-node-circle {
-          stroke: #38bdf8 !important;
-          stroke-width: 1.5px !important;
-          fill: #1e293b !important;
-        }
-        .dark-theme-markmap .markmap-link {
-          stroke: #38bdf8 !important;
-          stroke-width: 1.5px !important;
-        }
-        
-        /* Estilos para toolbar */
-        .mm-toolbar {
-          background-color: #f3f4f6 !important;
-          border-color: #e5e7eb !important;
-          box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
-        }
-        .mm-toolbar-item {
-          color: #374151 !important;
-        }
-        .mm-toolbar-item:hover {
-          background-color: #e5e7eb !important;
-        }
-        
-        /* Toolbar en modo oscuro */
-        .dark .mm-toolbar {
-          background-color: #374151 !important;
-          border-color: #4b5563 !important;
-          box-shadow: 0 2px 5px rgba(0,0,0,0.3) !important;
-        }
-        .dark .mm-toolbar-item {
-          color: #e5e7eb !important;
-        }
-        .dark .mm-toolbar-item:hover {
-          background-color: #4b5563 !important;
-        }
-      `;
-      document.head.appendChild(newStyle);
+    // Eliminar estilos anteriores para evitar conflictos
+    const oldStyle = document.getElementById('markmap-theme-styles');
+    if (oldStyle && oldStyle.parentNode) {
+      oldStyle.parentNode.removeChild(oldStyle);
     }
+    
+    // Crear una hoja de estilos más fuerte que asegure el contraste y oculte el logo
+    const newStyle = document.createElement('style');
+    newStyle.id = 'markmap-theme-styles';
+    newStyle.textContent = `
+      /* Estilos para ocultar el logo de markmap - Súper agresivo */
+      .mm-toolbar [title="markmap"],
+      .mm-toolbar a[title="markmap"],
+      .mm-toolbar div[title="markmap"],
+      .mm-toolbar *[title="markmap"],
+      .mm-toolbar a[href*="markmap"],
+      .mm-toolbar > div:first-child,
+      .mm-toolbar-item:has(svg[width="16"][height="16"]) {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        width: 0 !important;
+        height: 0 !important;
+        overflow: hidden !important;
+        position: absolute !important;
+        pointer-events: none !important;
+      }
+      
+      /* Modo oscuro - Color de texto blanco puro y brillante */
+      .dark-theme-markmap .markmap-node {
+        fill: #FFFFFF !important;
+        color: #FFFFFF !important;
+        stroke: #000000 !important;
+        stroke-width: 3px !important;
+        paint-order: stroke !important;
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.5) !important;
+        font-weight: 800 !important;
+      }
+      
+      /* Reglas super específicas para texto blanco */
+      html.dark .markmap-node,
+      .dark-theme-markmap .markmap-node,
+      .dark-theme-markmap text,
+      .dark-theme-markmap .markmap-node text,
+      .dark-theme-markmap g text,
+      html.dark svg text,
+      html.dark .markmap text {
+        fill: #FFFFFF !important;
+        color: #FFFFFF !important;
+        font-weight: 800 !important;
+      }
+      
+      /* Conexiones más brillantes en modo oscuro */
+      .dark-theme-markmap .markmap-link {
+        stroke: #64b5f6 !important;
+        stroke-width: 3px !important;
+        opacity: 0.9 !important;
+      }
+    `;
+    document.head.appendChild(newStyle);
+    
+    // Función para buscar y eliminar el logo cuando se renderiza
+    const removeLogoInterval = setInterval(() => {
+      // Buscar el logo por diferentes criterios
+      const logoElements = document.querySelectorAll('.mm-toolbar [title="markmap"], .mm-toolbar > div:first-child');
+      logoElements.forEach(el => {
+        if (el && el.parentNode && el instanceof HTMLElement) {
+          el.style.display = 'none';
+          el.style.visibility = 'hidden';
+          el.style.width = '0';
+          el.style.height = '0';
+          el.style.opacity = '0';
+        }
+      });
+    }, 100);
+    
+    // Intervalo para forzar texto blanco en modo oscuro
+    const forceWhiteTextInterval = theme === 'dark' ? setInterval(() => {
+      // Seleccionar todos los nodos de texto del mapa mental
+      const textNodes = document.querySelectorAll('.markmap-node, .markmap-node text, svg text');
+      textNodes.forEach(textNode => {
+        if (textNode instanceof SVGTextElement || textNode instanceof SVGElement) {
+          textNode.setAttribute('fill', '#FFFFFF');
+          textNode.style.fill = '#FFFFFF';
+          textNode.style.color = '#FFFFFF';
+          textNode.style.fontWeight = '800';
+          textNode.style.textShadow = '0 0 8px rgba(255, 255, 255, 0.5)';
+        } else if (textNode instanceof HTMLElement) {
+          textNode.style.color = '#FFFFFF';
+          textNode.style.fill = '#FFFFFF';
+          textNode.style.fontWeight = '800';
+          textNode.style.textShadow = '0 0 8px rgba(255, 255, 255, 0.5)';
+        }
+      });
+    }, 100) : null;
+    
+    // Limpiar los intervalos cuando se desmonte
+    return () => {
+      clearInterval(removeLogoInterval);
+      if (forceWhiteTextInterval) clearInterval(forceWhiteTextInterval);
+    };
   }, [theme, forceUpdate]);
   
   // Crear y configurar el mapa mental
@@ -228,11 +263,12 @@ export const MarkmapViewer = ({ markdown, mapKey = 0 }: MarkmapProps) => {
         
         // Asegurarnos de que el SVG tenga dimensiones explícitas y consistentes
         const parentWidth = svg.parentElement?.clientWidth || 800;
-        const parentHeight = isFullscreen ? window.innerHeight : 480; // Reducir altura cuando no está en fullscreen
+        // Usar toda la altura disponible del contenedor padre
+        const parentHeight = isFullscreen ? window.innerHeight : (svg.parentElement?.clientHeight || window.innerHeight * 0.7);
         
         // Forzar dimensiones explícitas para evitar NaN
         svg.style.width = '100%';
-        svg.style.height = isFullscreen ? '100vh' : '480px'; // Altura ajustada
+        svg.style.height = isFullscreen ? '100vh' : '100%'; // Usar 100% en lugar de altura fija
         
         // Establecer atributos dimensionales
         svg.setAttribute('width', `${parentWidth}px`);
@@ -242,6 +278,16 @@ export const MarkmapViewer = ({ markdown, mapKey = 0 }: MarkmapProps) => {
         // Aplicar clase de tema oscuro si es necesario
         if (theme === 'dark') {
           svg.classList.add('dark-theme-markmap');
+          
+          // Forzar texto blanco directamente al SVG en modo oscuro
+          const styleElement = document.createElementNS("http://www.w3.org/2000/svg", "style");
+          styleElement.textContent = `
+            text { fill: #FFFFFF !important; font-weight: 800 !important; }
+            .markmap-node { fill: #FFFFFF !important; }
+            .markmap-node text { fill: #FFFFFF !important; }
+            .markmap-link { stroke: #64b5f6 !important; stroke-width: 3px !important; }
+          `;
+          svg.appendChild(styleElement);
         } else {
           svg.classList.remove('dark-theme-markmap');
         }
@@ -296,6 +342,53 @@ export const MarkmapViewer = ({ markdown, mapKey = 0 }: MarkmapProps) => {
                 el.classList.remove('dark');
               }
               
+              // Eliminar el logo de markmap de la barra de herramientas - Múltiples técnicas
+              
+              // 1. Usando selectores y modificando estilos
+              const logoElements = el.querySelectorAll('[title="markmap"], a[href*="markmap"], div:first-child');
+              logoElements.forEach(logo => {
+                if (logo && logo.parentNode && logo instanceof HTMLElement) {
+                  logo.style.display = 'none';
+                  logo.style.visibility = 'hidden';
+                  logo.style.width = '0';
+                  logo.style.height = '0';
+                  logo.style.opacity = '0';
+                }
+              });
+              
+              // 2. Si hay un primer hijo que contiene el logo, ocultarlo
+              if (el.firstElementChild && el.firstElementChild instanceof HTMLElement) {
+                // Verificar si este es el contenedor del logo (suele ser el primer elemento)
+                if (el.firstElementChild.querySelector('svg') || 
+                    el.firstElementChild.querySelector('a[href*="markmap"]') ||
+                    el.firstElementChild.getAttribute('title') === 'markmap') {
+                  el.firstElementChild.style.display = 'none';
+                  el.firstElementChild.style.visibility = 'hidden';
+                  el.firstElementChild.style.width = '0';
+                  el.firstElementChild.style.height = '0';
+                  el.firstElementChild.style.opacity = '0';
+                }
+              }
+              
+              // 3. Insertar regla CSS específica para esta toolbar
+              const toolbarStyle = document.createElement('style');
+              toolbarStyle.textContent = `
+                .mm-toolbar > div:first-child,
+                .mm-toolbar > a:first-child,
+                .mm-toolbar > *:first-child,
+                .mm-toolbar [title="markmap"] {
+                  display: none !important;
+                  width: 0 !important;
+                  height: 0 !important;
+                  opacity: 0 !important;
+                  visibility: hidden !important;
+                  position: absolute !important;
+                  pointer-events: none !important;
+                  overflow: hidden !important;
+                }
+              `;
+              document.head.appendChild(toolbarStyle);
+              
               // Añadir botón de pantalla completa personalizado
               const fullscreenBtn = document.createElement('div');
               fullscreenBtn.className = 'mm-toolbar-item';
@@ -340,22 +433,26 @@ export const MarkmapViewer = ({ markdown, mapKey = 0 }: MarkmapProps) => {
   return (
     <div 
       ref={refContainer} 
-      className={`${isFullscreen ? 'fixed inset-0 z-50 bg-white dark:bg-gray-900' : 'relative w-full h-[480px]'}`}
+      className={`${isFullscreen ? 'fixed inset-0 z-50 bg-white dark:bg-gray-900' : 'relative w-full h-full pb-2'}`}
       style={{ 
         zIndex: isFullscreen ? 40 : 'auto',
-        position: isFullscreen ? 'fixed' : 'relative'
+        position: isFullscreen ? 'fixed' : 'relative',
+        minHeight: isFullscreen ? '100vh' : '100%',
+        height: '100%',
+        paddingBottom: isFullscreen ? '0' : '8px' // Pequeño espacio en la parte inferior
       }}
     >
       <svg 
         ref={refSvg} 
-        className={`w-full rounded-lg ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}
+        className={`w-full h-full rounded-lg ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}
         width="100%" 
-        height={isFullscreen ? '100vh' : '480px'}
+        height="100%"
         viewBox="0 0 800 600"
         preserveAspectRatio="xMidYMid meet"
         style={{ 
-          height: isFullscreen ? '100vh' : '480px',
-          position: 'relative'
+          height: '100%',
+          position: 'relative',
+          width: '100%'
         }}
       ></svg>
     </div>

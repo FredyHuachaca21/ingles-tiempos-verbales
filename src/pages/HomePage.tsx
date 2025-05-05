@@ -9,7 +9,7 @@ export const HomePage = () => {
   // Si estamos mostrando el mapa, ocupará toda la sección principal
   if (showMap) {
     return (
-      <div className="w-full relative">
+      <div className="w-full h-full relative pb-10" style={{ minHeight: 'calc(100vh - 180px)' }}>
         <div className="absolute top-4 right-4 z-10">
           <button
             onClick={() => setShowMap(false)}
@@ -27,7 +27,10 @@ export const HomePage = () => {
             Ocultar Mapa Mental
           </button>
         </div>
-        <div className="transition-all duration-300 ease-in-out">
+        <div className="transition-all duration-300 ease-in-out h-full" style={{ 
+          height: 'calc(100vh - 180px)',
+          marginBottom: '2rem'
+        }}>
           <MarkmapSelector />
         </div>
       </div>
