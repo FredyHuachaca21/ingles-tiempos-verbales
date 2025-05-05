@@ -2,14 +2,14 @@
 
 /* Reset base y estilos globales */
 *, *::before, *::after {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* Estilos básicos del documento - Neumorphism */
 html, body {
   height: 100%;
   width: 100%;
-  transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 html.dark {
@@ -18,18 +18,15 @@ html.dark {
 
 /* Animación sutil para cambio de tema */
 .theme-transition {
-  animation: theme-fade 0.7s ease;
+  animation: theme-fade 0.3s ease;
 }
 
 @keyframes theme-fade {
   0% {
     opacity: 1;
   }
-  40% {
-    opacity: 0.8;
-  }
-  60% {
-    opacity: 0.8;
+  50% {
+    opacity: 0.9;
   }
   100% {
     opacity: 1;
@@ -186,7 +183,7 @@ html.dark .mm-toolbar {
 
 html.dark .mm-toolbar-item {
   color: #e2e8f0 !important;
-}
+  }
 
 html.dark .mm-toolbar-item:hover {
   background-color: #334155 !important;

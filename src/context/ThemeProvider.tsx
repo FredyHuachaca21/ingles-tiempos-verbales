@@ -80,7 +80,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
       document.body.classList.add('theme-transition');
       setTimeout(() => {
         document.body.classList.remove('theme-transition');
-      }, 700);
+      }, 300);
       
       return newTheme;
     });
