@@ -9,33 +9,6 @@ export const HomePage = () => {
   const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState<'tenses' | 'verbs'>('tenses');
 
-  const cards = [
-    {
-      title: 'Tiempos Verbales',
-      description: 'Aprende todos los tiempos verbales en inglés con explicaciones detalladas.',
-      icon: <BookOpenIcon className="h-8 w-8" />,
-      path: '/tenses'
-    },
-    {
-      title: 'Verbos Regulares',
-      description: 'Listado completo de verbos regulares con sus formas.',
-      icon: <ClipboardIcon className="h-8 w-8" />,
-      path: '/regulares'
-    },
-    {
-      title: 'Verbos Irregulares',
-      description: 'Explora los verbos irregulares más comunes y sus particularidades.',
-      icon: <AcademicCapIcon className="h-8 w-8" />,
-      path: '/irregulares'
-    },
-    {
-      title: 'Ejercicios',
-      description: 'Pon a prueba tus conocimientos con ejercicios prácticos.',
-      icon: <PuzzlePieceIcon className="h-8 w-8" />,
-      path: '/ejercicios'
-    }
-  ];
-
   // Si estamos mostrando el mapa, ocupará toda la sección principal
   if (showMap) {
     return (

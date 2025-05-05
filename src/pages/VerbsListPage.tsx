@@ -1,12 +1,10 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import regularVerbs from '../data/json/regular_verbs.json';
 import irregularVerbs from '../data/json/irregular_verbs.json';
 
 export const VerbsListPage = () => {
   const [verbType, setVerbType] = useState<'regular' | 'irregular'>('regular');
   const [searchTerm, setSearchTerm] = useState('');
-  const navigate = useNavigate();
 
   // Determinar qué lista de verbos mostrar
   const verbs = verbType === 'regular' 
