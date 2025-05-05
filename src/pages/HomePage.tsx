@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MarkmapSelector } from '../components/markmap/MarkmapSelector';
 import { useTheme } from '../hooks/useTheme';
-import { BookOpenIcon, ClipboardIcon, PuzzlePieceIcon, AcademicCapIcon } from '@heroicons/react/24/outline';
 
 export const HomePage = () => {
   const [showMap, setShowMap] = useState(false);
