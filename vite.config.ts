@@ -12,4 +12,14 @@ export default defineConfig({
     react()
   ],
   base: process.env.NODE_ENV === 'production' ? `/${repositoryName}/` : '/',
+  // Agregar configuración para mejorar la compatibilidad con GitHub Pages
+  build: {
+    outDir: 'dist',
+    // Generar un archivo 404.html igual al index.html para permitir recarga de página y rutas profundas
+    rollupOptions: {
+      input: {
+        main: './index.html',
+      },
+    },
+  },
 })
